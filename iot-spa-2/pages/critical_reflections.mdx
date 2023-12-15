@@ -1,0 +1,7 @@
+# Critical reflections
+
+One of the main challenges faced is the Wi-Fi connection issue. There isn't a way for us to connect to WiFi dynamically right now. Our ideal solution involves configuring a bridge node as a Wi-Fi access point, allowing mobile devices to connect and access a captive control page for login credentials. However, even with this configuration, IoT devices still have difficulty connecting to public Wi-Fi networks, such as those in halls or universities, because these networks have extra login requirements.
+
+Another issue we're facing is the sensitivity of the sensor module. Switching out components requires a trial-and-error procedure because different modules require different setups. Moreover, we haven't yet used value caching. To improve network robustness, a device should store data values offline and send them upon reconnecting if it loses and then regains a network connection.
+
+ESP-NOW also has range restrictions, partially caused by the ESP8266 device. Although ESP-NOW is now the easier option, moving to a Wi-Fi-based communication solution between nodes could be an alternative, even though USB 3.0 devices have a greater range.
