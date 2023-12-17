@@ -1,7 +1,36 @@
 # Critical reflections
 
-One of the main challenges faced is the Wi-Fi connection issue. There isn't a way for us to connect to WiFi dynamically right now. Our ideal solution involves configuring a bridge node as a Wi-Fi access point, allowing mobile devices to connect and access a captive control page for login credentials. However, even with this configuration, IoT devices still have difficulty connecting to public Wi-Fi networks, such as those in halls or universities, because these networks have extra login requirements.
+## Hardcoded WiFi Credentials: A Limitation
 
-Another issue we're facing is the sensitivity of the sensor module. Switching out components requires a trial-and-error procedure because different modules require different setups. Moreover, we haven't yet used value caching. To improve network robustness, a device should store data values offline and send them upon reconnecting if it loses and then regains a network connection.
+Our current system's primary limitation is its reliance on hardcoded WiFi credentials. While this approach was adequate for development and demonstrating the proof of concept within a controlled environment, it poses significant challenges when deployed in varied settings. Recognizing this limitation, we identified a more flexible solution.
 
-ESP-NOW also has range restrictions, partially caused by the ESP8266 device. Although ESP-NOW is now the easier option, moving to a Wi-Fi-based communication solution between nodes could be an alternative, even though USB 3.0 devices have a greater range.
+**Proposed Enhancement**
+
+Our proposed enhancement involves implementing a standby mode in the bridge node, enabling it to function as a WiFi access point. Users can connect to this network using a laptop or mobile phone. Upon connection, the bridge node will display a simple HTML form on a captive portal, allowing users to enter their WiFi network's SSID and password. Once the form is submitted, the bridge node will use these credentials to connect to the specified network, thereby exiting standby mode and resuming normal operations. For chips like the ESP32, which offer Bluetooth capabilities, setting up the device via Bluetooth could be an additional, user-friendly configuration method.
+
+## Challenges with Captive Control WiFi Networks
+
+Another system drawback is the inability to connect to WiFi networks that require additional login credentials through a captive portal. This limitation, due to the chips' constrained capabilities, was temporarily circumvented during development by using a personal hotspot.
+
+**Proposed Approach**
+
+A potential solution involves delegating the authentication process to a more capable device, such as a smartphone or laptop. However, it's crucial to consider the ethical and legal implications when designing workarounds for IoT devices to bypass captive portals. Further research is necessary to develop a compliant and effective solution.
+
+## Addressing Latency Issues
+
+Our system experiences noticeable latency, particularly evident when the network complexity increases. For instance, the average time for a button press to be registered on the website was around 4 seconds, largely attributable to the use of a weak 4G mobile hotspot connection during testing.
+
+**Mitigation Strategies**
+
+To tackle this, several optimizations and strategic decisions could be implemented:
+
+- Upgrading from a free to a paid MQTT broker tier might significantly reduce latency, as paid tiers typically offer faster speeds and higher connection limits.
+- Improving the quality and stability of the network connection to the bridge node, perhaps by using a LAN connection, could dramatically enhance throughput and reduce latency.
+
+## ESP-NOW Range Limitations
+
+The ESP-NOW protocol in our ESP8266 modules exhibits significant range limitations, leading to unreliable results and potential data loss.
+
+**Alternative Solution**
+
+A viable alternative is to switch to the ESP-32 chip, which offers better range capabilities with the ESP-NOW protocol. While slightly more expensive than the ESP-8266, the ESP-32's enhanced reliability and range might justify the additional cost, especially considering our emphasis on building a robust system.

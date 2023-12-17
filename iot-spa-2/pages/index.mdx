@@ -1,9 +1,33 @@
-# Bus-o-T
+# TransitAware: IoT Bus Seat Tracker
 
-[Home](/)
+---
 
-[Hardware ](/hardware)
+> *IoT solution to detect whether seats in buses are occupied or vacant, utilizing a network of interconnected sensors based on ESP8266 boards.*
+> 
 
-[Critical reflections](/critical_reflections)
+---
 
-[Future work](/future_work)
+In this project, we've developed an application to display the occupancy status of seats on public buses, such as Lothian buses, using an Internet of Things (IoT) approach based on MQTT. This aids passengers in planning their journey to find available seats, enhancing customer satisfaction and public transit efficiency.
+
+Our system uses micro-limit switches to detect seat occupancy, transmitting data to a central server via a bridge node. MQTT is essential for its reliable data transmission, even in low bandwidth and high latency environments like moving buses.
+
+The real-time feedback capability of MQTT allows for immediate updates on seat availability, assisting both passengers in decision-making and transit providers in optimizing routes and schedules.
+
+Significantly, this MQTT-based IoT system is highly scalable, making it suitable for extensive bus networks. Its ability to adapt to various network sizes and passenger volumes significantly improves public transport management and passenger services.
+
+## Video of the working prototype
+<div>
+
+
+
+   <video  controls>
+      <source src={"/video.mp4"} type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+</div>
+
+
+## Meet our team
+![Team](/Presenta.png)
+
+

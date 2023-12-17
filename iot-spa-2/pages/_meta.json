@@ -1,7 +1,12 @@
 {
-  "index": "Bus-O-T",
-  "home": "Home",
-  "hardware": "Hardware",
+  "index": "TransitAware: IoT Bus Seat Tracker",
+  "hardware": "Hardware Design",
+  "software_design": "Software Design",
+  "performance": "Performance",
+  "how_to_use": "How to use it?",
+  "critical_reflections": "Critical Reflections",
+  "critical_analysis": "Critical Analysis",
   "future_work": "Future Work",
-  "critical_reflections": "Critical Reflections"
+  "references": "References",
+  "demo": "Live Demo"
 }

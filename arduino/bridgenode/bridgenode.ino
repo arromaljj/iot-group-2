@@ -9,12 +9,22 @@
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", 0, 60000); // Time offset in seconds (adjust according to your timezone), update interval in milliseconds
 
+
+// const char* mqttServer = "172.20.10.3";
+// const int mqttPort = 1883;
+// const char* mqttDeviceId = "seat_pad";
+// const char* mqttUser = ""; // No authentication needed for now
+// const char* mqttToken = ""; // No authentication needed for now
+// const char* mqttTopic = "seat_pad/data/json";
+// const char* mqttTopicDisplay = "seat_pad/display/json";
+// const char* mqttTopicCommand = "esp/command";
+
 // MQTT Broker settings`
-const char* mqttServer = "172.20.10.3";
-const int mqttPort = 1883;
+const char* mqttServer = "4d94fb43621849c4aa17a09c9f754df6.s2.eu.hivemq.cloud";
+const int mqttPort = 8883;
 const char* mqttDeviceId = "seat_pad";
-const char* mqttUser = ""; // No authentication needed for now
-const char* mqttToken = ""; // No authentication needed for now
+const char* mqttUser = "Arromal123"; // No authentication needed for now
+const char* mqttToken = "Arromal123"; // No authentication needed for now
 const char* mqttTopic = "seat_pad/data/json";
 const char* mqttTopicDisplay = "seat_pad/display/json";
 const char* mqttTopicCommand = "esp/command";
@@ -41,7 +51,7 @@ char pass[] = "gimmejuice";  //
 #define BUTTON_PIN 2 // GPIO pin the push button is connected to
 
 // MQTT objects and variables
-WiFiClient wifiClient;
+WiFiClientSecure wifiClient;
 PubSubClient mqttClient(mqttServer, mqttPort, wifiClient);
 
 // JSON document for MQTT payload
@@ -167,9 +177,11 @@ void initWifi(){
 }
 
 void initMQTT(){
+    wifiClient.setInsecure();
     mqttClient.setServer(mqttServer, mqttPort);
     while (!mqttClient.connected()) {
         Serial.println("Connecting to MQTT Broker...");
+        
         if (mqttClient.connect(mqttDeviceId, mqttUser, mqttToken)) {
             Serial.println("MQTT Connected");
             //mqttClient.subscribe(mqttTopicDisplay);

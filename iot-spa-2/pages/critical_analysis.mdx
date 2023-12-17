@@ -1,0 +1,56 @@
+# Critical Analysis
+
+
+The Client module is examined to quantitatively assess the device's lifespan. According to the sources regarding the performance of similar applications, the average duration for different activities is as stated below:
+
+![Screenshot 2023-12-16 033706.png](/Critical%20reflections%20aa834785504c4ca98343c4847c16bb4d/Screenshot_2023-12-16_033706.png)
+
+                                        *Fig 3.1: Activity time for micro limit switch*
+
+
+
+Total Sampling Time = 5040 mS
+
+Active Sampling Duty Cycle = Push Button Engagement / Total Time = 0.0009920634921
+
+Active Processing Duty Cycle = Processing Time / Total Time = 0.005952380952
+
+Active Transmission Duty Cycle = Transmission Time / Total Time = 0.0009920634921
+
+Inactive Sampling Time = 1 - Active Sampling Duty Cycle = 0.9990079365
+
+Inactive Processing Time = 1 - Active Processing Duty Cycle =0.994047619
+
+Inactive Transmission Time  = 1 - Active Transmission Duty Cycle = 0.9990079365
+
+Total Active Time = Active Sampling Duty Cycle + Active Processing Duty Cycle + Active Transmission Duty Cycle = 0.007936507937
+
+Total Inactive Time = Inactive Sampling Time + Inactive Processing Time + Inactive Transmission Time = 2.992063492
+
+
+
+![Screenshot 2023-12-16 033902.png](/Critical%20reflections%20aa834785504c4ca98343c4847c16bb4d/Screenshot_2023-12-16_033902.png)
+
+                                        *Fig 3.2: Current consumption for micro limit switch*
+
+---
+
+Therefore,
+
+Total Power Consumed = Total Active Time * Operational Current + Total Inactive Time * Sleep Current = 0.7344444444 mA
+
+For a Battery capacity of 2000 mAH
+
+Life Time in Hours =2000 / Total Power Consumed  = 2723.146747 hours
+
+Life Time in Days = Life Time in Hours / 24 = 113.4644478 Days
+
+---
+
+With a 5-second sleep interval, the device operates for up to 113 days. Adjusting the sleep time to 1 minute extends the device's lifespan to about 714 days. Increasing the battery capacity could further prolong this duration, though it would lead to a larger device size and potentially higher costs per client module unit.
+
+An alternative approach could be implementing a machine learning algorithm that predicts and adjusts the sleep times of client modules based on usage patterns. This system would analyze historical data to optimize energy consumption without manual input. While more complex and potentially time-consuming to develop, this method offers a more automated, intelligent solution for managing the device's operational efficiency.
+
+For custom calculations of the device's lifetime based on specific application requirements, refer to the provided link for guidance.
+
+[Google Sheet](https://docs.google.com/spreadsheets/d/1mHIiRTCPttX7dQs5JqARppX0wE83CuzK/edit?usp=sharing&ouid=109839411146160298967&rtpof=true&sd=true)

@@ -1,3 +1,6 @@
+
+
+
 import paho.mqtt.client as mqtt
 from paho import mqtt as paho_mqtt
 import asyncio
@@ -127,19 +130,26 @@ class MQTTPublish:
 
 class MQTTSubscribe:
     def __init__(self, server: Server, db: DB, mqtt_pub: MQTTPublish):
+        self.mqtt_pub = mqtt_pub
         self.success = False
         self.protocol = "mqtt"
-        self.mqtt_host = "localhost"
-        self.mqtt_port = 1883
+        self.mqtt_host = "4d94fb43621849c4aa17a09c9f754df6.s2.eu.hivemq.cloud"
+        self.mqtt_port = 8883
+        self.tls_uri = "4d94fb43621849c4aa17a09c9f754df6.s2.eu.hivemq.cloud:8883/mqtt"
+        self.websocket_uri = "4d94fb43621849c4aa17a09c9f754df6.s2.eu.hivemq.cloud:8884/mqtt"
+        self.username = "Arromal123"
+        self.password = "Arromal123"
         self.server = server
-        self.mqtt_pub = mqtt_pub
         self.db = db
+        self.client = None
 
     
     def setup(self):
         try:
             print("Attempting Connection")
             self.client = mqtt.Client()
+            self.client.username_pw_set(self.username, self.password)
+            self.client.tls_set(ca_certs=certifi.where(),tls_version=paho_mqtt.client.ssl.PROTOCOL_TLSv1_2)
             self.client.on_connect = self.on_connect
             self.client.on_message = self.on_message
             self.client.on_error = self.on_error

@@ -1,0 +1,42 @@
+# Performance
+
+## ESP-Sensor Nodes
+
+![Screenshot 2023-12-16 at 7.39.48 PM.png](/Performance%207b3d30131f2f4d99b7c587a6dded6da5/Screenshot_2023-12-16_at_7.39.48_PM.png)
+
+In the image above, we can see that the events are captured based on the sensor inputs. The payload sent using ESP Now to the bridge node is shown in the Serial Monitor
+
+## ESP-Bridge Node
+
+![Screenshot 2023-12-16 at 7.38.54 PM.png](/Performance%207b3d30131f2f4d99b7c587a6dded6da5/Screenshot_2023-12-16_at_7.38.54_PM.png)
+
+In the image above we can see in the Serial monitor that it is able to successfully connect to WiFi and the MQTT broker. It also receives the sensor events captured by each ESP-Sensor node
+
+## MQTT Broker
+
+![Screenshot 2023-12-16 at 7.57.43 PM.png](/Performance%207b3d30131f2f4d99b7c587a6dded6da5/Screenshot_2023-12-16_at_7.57.43_PM.png)
+
+In the image above, the sensor events were successfully sent to the topic “/seat_pad/data/json”. We use HiveMQ, a cloud hosted solution, so that our react application can subscribe to it over websockets.
+
+## Database
+
+![Screenshot 2023-12-16 at 7.30.41 PM.png](/Performance%207b3d30131f2f4d99b7c587a6dded6da5/Screenshot_2023-12-16_at_7.30.41_PM.png)
+
+In the image above, we can see that the values are being sent to MongoDb. This is achieved by the persistance server whose sole purpose is to subscribe values from the MQTT broker and use the Mongo ORM to persist the data. 
+
+## Persistance Server / Node Red
+
+![Screenshot 2023-12-16 at 7.32.54 PM.png](/Performance%207b3d30131f2f4d99b7c587a6dded6da5/Screenshot_2023-12-16_at_7.32.54_PM.png)
+
+Here we can see that our server is capturing sensor events by subscribing to the topic “seat_pad/data/json”. This data is then saved to MongoDb.
+
+![Node Red](/node_red.png)
+
+Alternatively we also used Node Red initially to capture sensor events and save them to MongoDb. The flow is shown above.
+
+
+## Live Demo
+
+![demo.gif](/Performance%207b3d30131f2f4d99b7c587a6dded6da5/demo.gif)
+
+Following is a gif demonstrating the real time capabilities of our system. We can see that the application is responding to the button presses in real time. The events are sent over websockets. The unoccupied seats are represented as light gray while the occupied ones are red. The unconfigured seats are shown as a dark gray. Here is a link to the live demo of our application: [Live Demo](/demo)

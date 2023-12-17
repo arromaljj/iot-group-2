@@ -1,0 +1,211 @@
+# Software Design
+
+
+## Architecture
+
+
+![Slide1.PNG](/Software%20Design%20c248a1740f1340ffbb7d922417c87f0d/Slide1.png)
+
+                                                        *Fig.2.1: System architecture of IoT*
+
+
+The client modules use the ESP-Now protocol to communicate with the bridge module wirelessly, bypassing the need for a router. ESP-Now's energy efficiency extends the modules' operational lifespan. When activated, the micro limit switch sends data to the bridge module, which connects to the client and gateway modules. The bridge and gateway use WiFi for serial communication, ensuring reliable data transfer.
+
+The gateway plays a crucial role in managing messages between the MQTT broker and the bridge module, including encrypting and decrypting messages for enhanced network security. It uses the MQTT protocol to communicate with the broker based on specified sender-receiver topics. This setup employs HiveMQ as the public MQTT broker.
+
+The Node-Red platform receives the data from the MQTT broker and will perform data handling and associated functionalities. It is also associated with a dynamic dashboard, which visualises data using various tools.  The dashboard can also send the commands from the cloud platforms to the MQTT broker and to the microcontrollers via the gateway.  A MongoDB cloud database, linked through NodeRed, stores this data. Additionally, NodeRed interfaces with a website or web app, enabling users to monitor bus seat availability in real time.
+
+
+![Pr.png](/Software%20Design%20c248a1740f1340ffbb7d922417c87f0d/Pr.png)
+
+                                                       *Fig 2.2: MQTT Broker Communication*
+
+
+MQTT protocol networks operate incredibly well with limited bandwidth and frequent connection drops. It runs on an event message-based system. The gateway publishes messages from the controller into a designated event topic, which a cloud application that has subscribed to can then access. The cloud application processes and shows the pertinent data if the published message complies with the specified semantics.
+
+Moreover, the cloud application can publish messages to a certain "order" topic. Any legitimate commands received, such as changing the refresh rate or toggling the system's active state, are carried out by the gateway, which is subscribed to this topic. The gateway then modifies its own configuration and may notify other networked devices of these modifications.
+
+However, it is crucial to remember that in order to protect data and stop illegal access, it is better for applications in real-world environments to use a private, secure MQTT broker rather than a public one.
+
+
+
+## Software Components
+
+
+
+Our software system is structured into several interconnected sub-systems and services, each playing a vital role in the overall functionality. These components include:
+
+- ESP-Sensor Nodes Firmware
+- ESP-Bridge Node Firmware
+- MQTT Broker
+- Persistence Server
+- Web Application Server
+- Seat-View Web Application
+
+Think of each component as a node in a communication network, where every node contributes uniquely to the system's operation. Let's delve into the details of these components.
+
+![chatuml-diagram.svg](/Software%20Design%20c248a1740f1340ffbb7d922417c87f0d/chatuml-diagram.svg)
+
+### ESP-Sensor Nodes Firmware
+
+**Description:**
+ESP-Sensor Nodes are essential for data sensing and transmission. They form a cluster with each node connected to a Bridge Node. Sensor Nodes act as master nodes, controlling the data transmission to the Bridge Nodes, which are slave nodes.
+
+**Key Technologies/Dependencies:**
+
+- ESP Now: A protocol for communication between ESP devices, facilitating master-slave interactions.
+
+**Inbound Communications:**
+
+- Receives commands from the Bridge Node.
+    - Consults a lookup table for corresponding function invocation.
+    - A "SLEEP" command when received triggers a deep sleep mode for 30 seconds.
+
+**Outbound Communications:**
+
+- Transmits sensor state changes.
+    - Checks sensor input every 200ms.
+    - A state change triggers the transmit function, sending the reading and a unique identifier (e.g., MAC Address).
+
+---
+
+### ESP-Bridge Node Firmware
+
+**Description:**
+
+The Bridge Node, also powered by the ESP-8266 chip, has a distinct firmware from the Sensor Nodes. It collects data from Sensor Nodes and relays it to an MQTT Broker through a gateway. The ESP Now protocol is employed for efficient handling of multiple connections within its range.
+
+The Bridge Node then publishes this data to a MQTT topic ("/readings"). Here's a sample payload from this topic:
+
+```jsx
+{"limitSwitchActive":true,"mac":"F4:CF:A2:DF:EF:4F"}
+
+```
+
+The Bridge Node must be connected to an access point that facilitates communication with the MQTT Broker, which typically listens on port 1883.
+
+**Key Technologies/Dependencies:**
+
+- ESP Now: For receiving data from Sensor Nodes.
+- MQTT Protocol: For publishing data to a topic ("/readings").
+
+**Inbound Communications:**
+
+- Receives transmissions from Sensor Nodes.
+
+**Outbound Communications:**
+
+- Publishes data to the MQTT Broker.
+
+
+### MQTT Broker
+
+**Description:**
+The MQTT Broker orchestrates the interaction between publishers and subscribers, managing the data flow for each topic.
+
+**Key Technologies/Dependencies:**
+
+- Mosquitto (Development)
+- HiveMQ (Production)
+
+**Inbound Communications:**
+
+- Accepts data published to topics from different sources which can then be transmitted to subscribers.
+
+**Outbound Communications:**
+
+- Distributes data to subscribers.
+
+
+### Persistence Server / Node Red
+
+**Description:**
+The Persistence Server's role is to subscribe to the MQTT Broker, process incoming data, and store it in a database. It formats, validates, and saves the data to MongoDB.
+
+**Key Technologies/Dependencies:**
+
+- MongoDB ORM
+
+**Inbound Communications:**
+
+- Subscribes and receives data from MQTT Broker.
+
+**Outbound Communications:**
+
+- Stores processed data in MongoDB.
+
+
+### Database Layer
+
+**Description:**
+This layer uses MongoDB Atlas for storing JSON documents, including MAC addresses and sensor states. 
+
+**Key Technologies/Dependencies:**
+
+- MongoDB Atlas
+
+**Inbound Communications:**
+
+- Receives formatted data from Persistence Server.
+
+
+
+### Web Application Server
+
+**Description:**
+Responsible for building and serving the React application.
+
+**Key Technologies/Dependencies:**
+
+- Nextra
+- NextJS
+
+**Inbound Communications:**
+
+- Browser requests the web application server for the Javascript bundle.
+
+**Outbound Communications:**
+
+- Delivers the JavaScript bundle to clients.
+
+
+
+### Web Application
+
+**Description:**
+A React application providing documentation and a live demo of the system. Requires ESP866 to be operational for the demo.
+
+**Key Technologies/Dependencies:**
+
+- React
+- MDX
+- Nextra
+- TailwindCSS
+
+**Inbound Communications:**
+
+- Interfaces with the Persistence Service for data retrieval.
+- Displays historical and live data from MongoDB and MQTT topics.
+
+**Outbound Communications:**
+
+- Requests made to Persistance Service and MQTT broker.
+
+
+
+## Technologies Involved
+
+1. **ESP-NOW**: ESP-NOW is a proprietary protocol developed by Espressif Systems for their ESP-series of microcontrollers. It enables multiple ESP devices, such as ESP32 or ESP8266, to communicate with each other directly without the need for a Wi-Fi network. This protocol is known for its low-power consumption and high-speed data transfer, making it ideal for simple wireless communication scenarios.
+2. **ESP-8266 Drivers**: These are software drivers for the ESP8266 Wi-Fi microchip, a popular low-cost microcontroller with built-in Wi-Fi functionality. The drivers allow devices and applications to interface with the ESP8266 chip, enabling them to use its Wi-Fi capabilities for tasks like sending and receiving data over the internet.
+3. **Mosquitto**: Mosquitto is an open-source message broker that implements the MQTT protocol (MQ Telemetry Transport). It's lightweight and suitable for use in all situations from low-power single-board computers to full servers. It's widely used for Internet of Things (IoT) and other applications requiring efficient, real-time data transmission.
+4. **HiveMQ**: HiveMQ is a commercial MQTT broker designed for enterprise-grade deployments. It's highly scalable and optimized for high-throughput and low-latency scenarios, making it suitable for critical IoT applications. HiveMQ supports MQTT 5.0, WebSockets, and features like clustering and comprehensive security mechanisms.
+5. **FastAPI**: FastAPI is a modern, fast (high-performance) web framework for building APIs with Python 3.7+ based on standard Python type hints. Its key features include fast development and performance, easy error handling, and the automatic generation of interactive API documentation.
+6. **[Socket.io](http://socket.io/)**: [Socket.io](http://socket.io/) is a JavaScript library for real-time web applications. It enables real-time, bidirectional and event-based communication between web clients and servers. It works on every platform, browser, or device, focusing equally on reliability and speed.
+7. **Paho MQTT Client Library**: The Paho project provides open-source client implementations of MQTT and MQTT-SN messaging protocols. The Paho MQTT client library enables applications to connect to an MQTT broker to publish messages, and to subscribe to topics and receive published messages.
+8. **React**: React is a declarative, efficient, and flexible JavaScript library for building user interfaces. Developed by Facebook, it lets developers create large web applications that can change data, without reloading the page. Its key feature is the ability to build components, which are reusable UI elements.
+9. **MDX**: MDX is an authorable format that lets you seamlessly write JSX in your Markdown documents. This means you can use Markdown's succinct syntax (such as `# Heading`) for content, and intermix it with JSX for more complex or interactive components.
+10. **NextJS**: Next.js is a React-based open-source development framework built on Node.js enabling React applications to perform server-side rendering. It offers features like automatic code splitting, simple page-based routing, built-in CSS and SASS support, and pre-rendering for better performance and SEO.
+11. **Nextra**: Nextra is a Next.js based static site generator. It's powered by MDX and can be used to create documentation websites easily and quickly. Nextra supports theme customization and includes out-of-the-box support for syntax highlighting and MDX components.
+12. **TailwindCSS**: TailwindCSS is a utility-first CSS framework for rapidly building custom user interfaces. It provides low-level utility classes that let you build complex designs without encouraging any two sites to look the same. Its approach emphasizes composition over inheritance, making styling more efficient and maintainable.
+
+###

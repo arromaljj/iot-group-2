@@ -1,0 +1,50 @@
+# How to use it?
+
+## Hardware Integration
+
+To ensure optimal functionality of each module, it's crucial to correctly flash the appropriate firmware using the files provided. This process can be executed through the Arduino IDE or in VS Code, equipped with the necessary extensions. It's imperative to update the MQTT host, username, and password in the ESP-Sensor modules for seamless integration. We must also ensure that the modules are in proximity to each other to facilitate communication via ESP-NOW.
+
+### **ESP-Sensor Module**
+
+For the ESP-Sensor module to function effectively, flash the chip with the `espsend.ino` file. The sensor's configuration requires the data pin to be assigned to GPIO Pin 5, with power connections appropriately made to the 3V and GND pins.
+
+### **ESP-Bridge Module**
+
+To activate the ESP-Bridge module, flash the chip with the `bridgenode.ino` file. This module does not necessitate additional configuration, facilitating a more straightforward setup.
+
+## Software Integration
+
+For the successful operation of the following modules, execute the provided commands in your chosen environment. It's essential to maintain the connectivity between the different system components.
+
+### **MQTT Broker**
+
+The choice of MQTT Broker depends on the development environment. For QA and Production settings, HiveMQ is a recommended choice, except in cases where existing hardware or cloud infrastructure is available. In development environments, Mosquitto (a local MQTT broker) is advisable, particularly in scenarios where institutional WiFi connectivity presents challenges, like captive control pages.
+
+To install Mosquitto, use the following commands:
+
+```jsx
+sudo apt-get install mosquitto # For Linux
+brew install mosquitto # For MacOS
+
+```
+
+For HiveMQ, create an account and a new cluster. Upon cluster creation, you'll receive the hostname and credentials. This information must be updated in the firmware of the ESP devices and in the Persistence Server, where subscription to topics occurs. When utilizing HiveMQ, it's necessary to enable TLS in the ESP MQTT library.
+
+### **Persistence Server**
+
+Launching the Persistence Server is a straightforward procedure. Navigate to the `iot-server` subdirectory and execute `python server.py`. This command will initiate the server on port 8000. If the MQTT server is local, then the Persistence Server should also operate locally. In QA and Production environments, it's advisable to run it on a dedicated machine or a cloud instance.
+
+### **React Web Application & Server**
+
+Starting the web application is a simple process. Move to the `iot-spa-2` subdirectory and execute the following commands, which will launch the server on port 3000:
+
+```jsx
+npm run start
+# Launches the development server
+npm run dev
+# Generates a build for deployment
+npm run build
+
+```
+
+In a development environment, use `npm run dev` to run the service locally. For production deployment, consider using Vercel, which was our preferred platform for this project.
